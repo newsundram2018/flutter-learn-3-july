@@ -1,121 +1,73 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_one/card.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MaterialApp(
-    title: "Experiment App",
-    home: MyInputField(),
-    theme: ThemeData(primarySwatch: Colors.blue),
+    title: "My App for API's",
+    home: HomeApp(),
     debugShowCheckedModeBanner: false,
+    theme: ThemeData(primarySwatch: Colors.pink),
   ));
 }
 
-class MyInputField extends StatefulWidget {
-  const MyInputField({
-    Key? key,
-  }) : super(key: key);
+class HomeApp extends StatefulWidget {
+  const HomeApp({Key? key}) : super(key: key);
 
   @override
-  State<MyInputField> createState() => _MyInputFieldState();
+  State<HomeApp> createState() => _HomeAppState();
 }
 
-class _MyInputFieldState extends State<MyInputField> {
-  final TextEditingController _namecontroller = TextEditingController();
-  final TextEditingController _emailcontroller = TextEditingController();
-  var email;
-  var name;
+class _HomeAppState extends State<HomeApp> {
+  var url = 'https://jsonplaceholder.typicode.com/photos';
+  var data;
+  var res;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+    getData();
+    setState(() {});
+  }
+
+  getData() async {
+    res = await http.get(Uri.parse(url));
+    data = await jsonDecode(res.body);
+
+    data != null ? print(data.length) : null;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My App")),
+      appBar: AppBar(
+        title: Text("API Request"),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            name = _namecontroller.text;
-            email = _emailcontroller.text;
-          });
-        },
-        child: Icon(Icons.edit),
+        onPressed: () => {print("Hello")},
+        child: Icon(Icons.add_circle),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          color: Colors.white,
-          child: SingleChildScrollView(
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  // ignore: prefer_const_literals_to_create_immutables
-                  children: <Widget>[
-                    SizedBox(
-                      height: 20,
+      body: Center(
+        child: data != null
+            ? ListView.builder(
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListTile(
+                      title: Text(data[index]["title"]),
+                      leading: Image.network(data[index]['url']),
+                      subtitle: Text("ID$index"),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _namecontroller,
-                        keyboardType: TextInputType.text,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Name",
-                          labelText: "Name",
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _emailcontroller,
-                        keyboardType: TextInputType.text,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Email",
-                          labelText: "Email",
-                        ),
-                      ),
-                    ),
-                    Text(
-                      _namecontroller.text,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(_emailcontroller.text),
-                  ],
-                ),
+                  );
+                },
+                itemCount: data.length,
+              )
+            : Container(
+                child: CircularProgressIndicator(),
               ),
-            ),
-          ),
-        ),
       ),
-    );
-  }
-}
-
-class MyColumn extends StatelessWidget {
-  const MyColumn({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CustomCard(
-          index: 1,
-          onPress: () => {
-            print('hello'),
-          },
-        ),
-      ],
     );
   }
 }
