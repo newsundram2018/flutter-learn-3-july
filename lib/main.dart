@@ -8,7 +8,7 @@ void main() {
     title: "My App for API's",
     home: HomeApp(),
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(primarySwatch: Colors.pink),
+    theme: ThemeData(primarySwatch: Colors.green),
   ));
 }
 
@@ -51,10 +51,12 @@ class _HomeAppState extends State<HomeApp> {
       ),
       body: Center(
         child: data != null
-            ? ListView.builder(
+            ? GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(2),
                     child: ListTile(
                       title: Text(data[index]["title"]),
                       leading: Image.network(data[index]['url']),
